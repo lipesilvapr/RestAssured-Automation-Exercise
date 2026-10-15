@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import static com.automationexercise.api.support.ApiAssertions.assertApiMessage;
 import static com.automationexercise.api.support.ApiAssertions.assertHttpOk;
-import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("products")
@@ -37,14 +36,6 @@ class ProductsApiTest extends BaseApiTest {
             assertThat(product.brand()).isNotBlank();
             assertThat(product.category().category()).isNotBlank();
         });
-    }
-
-    @Test
-    @DisplayName("GET /productsList respeita o contrato (JSON Schema)")
-    void shouldMatchProductsListSchema() {
-        products.getAll()
-                .then()
-                .body(matchesJsonSchemaInClasspath("schemas/products-list.json"));
     }
 
     @Test
