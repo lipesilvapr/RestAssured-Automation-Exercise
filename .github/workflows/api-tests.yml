@@ -6,10 +6,21 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   api-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
+      - name: Info da máquina
+        run: |
+          echo "ImageOS=$ImageOS ImageVersion=$ImageVersion"
+          nproc
+          free -m
+          df -h /
+          lscpu | grep -E "Model name|^CPU\(s\)" || true
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
