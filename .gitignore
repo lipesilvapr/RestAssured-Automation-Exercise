@@ -9,3 +9,4 @@ target/
 .DS_Store
 allure-results/
 allure-report/
+.allure/
