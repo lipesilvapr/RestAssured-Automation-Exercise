@@ -11,6 +11,11 @@ on:
         type: choice
         options: ["true", "false"]
         default: "true"
+      threads:
+        description: "Threads da execução (1 = sequencial)"
+        type: choice
+        options: ["1", "2", "4"]
+        default: "1"
 
 permissions:
   contents: read
@@ -33,15 +38,24 @@ jobs:
           distribution: temurin
           java-version: 17
           cache: ${{ inputs.use_cache != 'false' && 'maven' || '' }}
+      - name: Preparar dependências e compilar (não medido)
+        run: mvn -B test-compile
       - name: Executar testes (medido)
         uses: lipesilvapr/tcc-metricas/.github/actions/measure@main
         with:
           projeto: restassured
           camada: api
-          command: mvn -B test
+          command: |
+            if [ "${{ inputs.threads || '1' }}" = "1" ]; then
+              mvn -B test -Djunit.jupiter.execution.parallel.enabled=false
+            else
+              mvn -B test -Djunit.jupiter.execution.parallel.enabled=true \
+                -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.threads }}
+            fi
           junit-glob: target/surefire-reports/TEST-*.xml
           expected-tests: "14"
           cache: ${{ inputs.use_cache || 'true' }}
+          threads: ${{ inputs.threads || '1' }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
